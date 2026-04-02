@@ -10,7 +10,7 @@ if "page" not in st.session_state:
 client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
 st.set_page_config("Chem-Ai",layout="wide")
-st.title("Chem-Ai")
+st.title("ChemAssist-Ai")
 
 
 #---------for creating pallet or cards----------------
