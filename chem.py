@@ -104,15 +104,16 @@ if st.session_state.page == "home":
     ### 🏫 DYPCOE  
     """)
 
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.subheader("✨ Features of the App")
-    st.write("""
-    - 📚 Learn polymer concepts easily  
-    - 🧪 Test knowledge with quizzes  
-    - 🤖 Ask doubts using AI chatbot  
-    """)
-    st.markdown('</div>', unsafe_allow_html=True)
-
+    st.markdown("""
+    <div class="card">
+        <h3>✨ Features of the App</h3>
+        <ul>
+            <li>📚 Learn polymer concepts easily</li>
+            <li>🧪 Test knowledge with quizzes</li>
+            <li>🤖 Ask doubts using AI chatbot</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
 if st.session_state.page == "notes":
     st.subheader("⌬ Notes")     
     st.warning("Under construction!!!")           
