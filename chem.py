@@ -5,7 +5,7 @@ from google import genai
 
 
 if "page" not in st.session_state:
-    st.session_state.page = "Home"
+    st.session_state.page = "home"
 
 client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
@@ -61,7 +61,7 @@ def get_response(user_input):
         contents=f"""
         You are a chemistry tutor. Only answer chemistry-related questions.
         If the question is not related to chemistry, say:
-        'I only answer chemistry questions 😊'(but if (hi or bro or something other calling name) is user input then answer it as chem tutor)
+        'I only answer chemistry questions 😊'(but if (hi or bro or something other calling name(greeting)) is user input then answer it as chem tutor)
 
         Question: {user_input}
         """
