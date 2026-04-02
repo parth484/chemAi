@@ -81,8 +81,23 @@ if st.session_state.page == "Chem Assistant":
 
 
 if st.session_state.page == "home":
-    st.subheader("⌬ Home")     
-    st.warning("Under construction!!!")   
+    st.title("🧬 PolyLearn AI")
+    st.caption("🚀 Interactive Polymer Learning App with AI Chatbot")
+
+    st.markdown("""
+    ### 👨‍🎓 Developed by: Parth  
+    ### 📘 Subject: Chemistry (Polymers)  
+    ### 🏫 DYPCOE  
+    """)
+
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.subheader("✨ Features of the App")
+    st.write("""
+    - 📚 Learn polymer concepts easily  
+    - 🧪 Test knowledge with quizzes  
+    - 🤖 Ask doubts using AI chatbot  
+    """)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 if st.session_state.page == "notes":
     st.subheader("⌬ Notes")     
