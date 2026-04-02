@@ -13,6 +13,20 @@ st.set_page_config("Chem-Ai",layout="wide")
 st.title("Chem-Ai")
 
 
+#---------for creating pallet or cards----------------
+st.markdown("""
+<style>
+.card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    margin-bottom: 20px;
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 st.markdown(
 """
