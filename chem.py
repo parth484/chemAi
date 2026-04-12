@@ -124,17 +124,17 @@ if st.session_state.page == "notes":
 
         <ul>
             <li>
-                📚 <b>Learning Made Easy:</b><br>
+                  <b>Learning Made Easy:</b><br>
                 This app explains polymer concepts in a simple and structured way, helping you understand topics deeply.
             </li>
 
             <li>
-                🧪 <b>Interactive Quizzes:</b><br>
+                  <b>Interactive Quizzes:</b><br>
                 Practice with quizzes that reinforce your knowledge and improve retention.
             </li>
 
             <li>
-                🤖 <b>AI Chatbot Support:</b><br>
+                   <b>AI Chatbot Support:</b><br>
                 Ask any doubt anytime and get instant explanations powered by AI.
             </li>
         </ul>
