@@ -3,7 +3,7 @@ import os
 import datetime
 import base64
 from google import genai
-
+import streamlit.components.v1 as components
 
 if "page" not in st.session_state:
     st.session_state.page = "home"
@@ -127,7 +127,8 @@ if st.session_state.page == "home":
         </ul>
     </div>
     """, unsafe_allow_html=True)
-
+ 
+    
 
 if st.session_state.page == "notes":
     st.subheader("⌬ Notes")     
