@@ -118,25 +118,19 @@ if st.session_state.page == "notes":
     st.subheader("⌬ Notes")     
     st.title("Polymers in Engineering")  
 
+    
     st.markdown("""
     <div class="card">
         <h3>✨ Features of the App</h3>
 
-        <ul>
-            <li>
-                <b>📚 Learning Made Easy:</b><br>
-                This app explains polymer concepts in a simple and structured way, helping you understand topics deeply.
-            </li>
+        <p><b>📚 Learning Made Easy:</b><br>
+        This app explains polymer concepts in a simple and structured way, helping you understand topics deeply.</p>
 
-            <li>
-                <b>🧪 Interactive Quizzes:</b><br>
-                Practice with quizzes that reinforce your knowledge and improve retention.
-            </li>
+        <p><b>🧪 Interactive Quizzes:</b><br>
+        Practice with quizzes that reinforce your knowledge and improve retention.</p>
 
-            <li>
-                <b>🤖 AI Chatbot Support:</b><br>
-                Ask any doubt anytime and get instant explanations powered by AI.
-            </li>
-        </ul>
+        <p><b>🤖 AI Chatbot Support:</b><br>
+        Ask any doubt anytime and get instant explanations powered by AI.</p>
+
     </div>
     """, unsafe_allow_html=True)
