@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import datetime
+import base64
 from google import genai
 
 
@@ -93,6 +94,18 @@ if st.session_state.page == "Chem Assistant":
         reply = get_response(user_input)
         st.write("🤖", reply)
 
+def show_pdf(file_path):
+    with open(file_path, "rb") as f:
+        base64_pdf = base64.b64encode(f.read()).decode('utf-8')
+
+    pdf_display = f"""
+    <iframe src="data:application/pdf;base64,{base64_pdf}" 
+    width="100%" height="600" type="application/pdf"></iframe>
+    """
+
+    st.markdown(pdf_display, unsafe_allow_html=True)
+
+
 
 if st.session_state.page == "home":
     st.title("🧬 PolyLearn AI")
@@ -146,3 +159,6 @@ if st.session_state.page == "notes":
 
     </div>
     """, height=300)
+
+    # call function pdfff
+    show_pdf("Chem 4 real.pdf")
