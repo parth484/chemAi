@@ -75,7 +75,7 @@ def get_response(user_input):
         contents=f"""
         You are a chemistry tutor. Only answer chemistry-related questions.
         If the question is not related to chemistry, say:
-        'I only answer chemistry questions 😊'(but if (hi or bro or something other calling name(greeting)) is user input then answer it as chem tutor)
+        'I only answer chemistry questions 😊'(but if (hi or bro or something other calling name(greeting)) is user input; then answer it as chem tutor)
 
         Question: {user_input}
         """
@@ -116,4 +116,28 @@ if st.session_state.page == "home":
     """, unsafe_allow_html=True)
 if st.session_state.page == "notes":
     st.subheader("⌬ Notes")     
-    st.warning("Under construction!!!")           
+    st.title("Polymers in Engineering")  
+
+    st.markdown("""
+<div class="card">
+    <h3>✨ Features of the App</h3>
+
+    <ul>
+        <li>
+            📚 <b>Learning Made Easy:</b><br>
+            This app explains polymer concepts in a simple and structured way, helping you understand topics deeply.
+        </li>
+
+        <li>
+            🧪 <b>Interactive Quizzes:</b><br>
+            Practice with quizzes that reinforce your knowledge and improve retention.
+        </li>
+
+        <li>
+            🤖 <b>AI Chatbot Support:</b><br>
+            Ask any doubt anytime and get instant explanations powered by AI.
+        </li>
+    </ul>
+
+</div>
+""", unsafe_allow_html=True)
