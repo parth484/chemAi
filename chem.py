@@ -127,12 +127,7 @@ if st.session_state.page == "home":
         </ul>
     </div>
     """, unsafe_allow_html=True)
-if st.session_state.page == "notes":
-    st.subheader("⌬ Notes")     
-    st.title("Polymers in Engineering")  
 
-    
-    import streamlit.components.v1 as components
 
 if st.session_state.page == "notes":
     st.subheader("⌬ Notes")     
