@@ -1,7 +1,6 @@
 import streamlit as st
 import os
 import datetime
-#import base64
 from google import genai
 import streamlit.components.v1 as components
 
@@ -145,5 +144,26 @@ if st.session_state.page == "notes":
 
     </div>
     """, height=300)
+
+    components.html("""
+    <div style="
+        background: rgba(255,255,255,0.05);
+        padding: 20px;
+        border-radius: 15px;
+        color: white;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    ">
+
+        <h3>📘 Introduction</h3>
+
+        <p style="line-height: 1.7;">
+        The commercial application of polymers has increased over the years. A wide variety of
+        polymers are used for engineering and medical applications. The demand for polymers with
+        specific properties for specific end uses has increased. This has led to the development
+        of new polymeric materials known as speciality polymers.
+        </p>
+
+    </div>
+    """, height=250)
 
    
