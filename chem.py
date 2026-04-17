@@ -119,51 +119,68 @@ if st.session_state.page == "home":
 
 if st.session_state.page == "notes":
     st.subheader("⌬ Notes")     
-    st.title("Polymers in Engineering")  
+     
 
-    components.html("""
-    <div style="
-        background: rgba(255,255,255,0.05);
-        padding: 20px;
-        border-radius: 15px;
-        color: white;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    ">
+    st.title("🧪 Polymers Quiz")
 
-        <h3>✨ Contents</h3>
+    score = 0
 
-        <p>
-        1. Introduction<br>
-        2. Engineering Thermoplastics<br>
-        3. Biodegradable Polymers<br>
-        4. Conducting Polymers<br>
-        5. Electroluminescent Polymers<br>
-        6. Polymer Composites<br>
-        7. Compounding of Plastics
-        </p>
+    # Q1
+    q1 = st.radio("1. Which polymer is biodegradable?",
+                ["PVC", "PHBV", "Polystyrene"])
+    if q1 == "PHBV":
+        score += 1
 
-    </div>
-    """, height=300)
+    # Q2
+    q2 = st.radio("2. Engineering thermoplastics are known for:",
+                ["Low strength", "High strength & durability", "Only flexibility"])
+    if q2 == "High strength & durability":
+        score += 1
 
-    components.html("""
-    <div style="
-        background: rgba(255,255,255,0.05);
-        padding: 20px;
-        border-radius: 15px;
-        color: white;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    ">
+    # Q3
+    q3 = st.radio("3. Conducting polymers conduct electricity due to:",
+                ["Heat", "Electron movement", "Water content"])
+    if q3 == "Electron movement":
+        score += 1
 
-        <h3>📘 Introduction</h3>
+    # Q4
+    q4 = st.radio("4. OLED works on which principle?",
+                ["Heat emission", "Electroluminescence", "Magnetism"])
+    if q4 == "Electroluminescence":
+        score += 1
 
-        <p style="line-height: 1.7;">
-        The commercial application of polymers has increased over the years. A wide variety of
-        polymers are used for engineering and medical applications. The demand for polymers with
-        specific properties for specific end uses has increased. This has led to the development
-        of new polymeric materials known as speciality polymers.
-        </p>
+    # Q5
+    q5 = st.radio("5. FRP stands for:",
+                ["Flexible Resin Polymer", "Fiber Reinforced Plastic", "Fast Reactive Polymer"])
+    if q5 == "Fiber Reinforced Plastic":
+        score += 1
 
-    </div>
-    """, height=250)
+    # Q6
+    q6 = st.radio("6. Which is used to increase flexibility of plastics?",
+                ["Stabilizer", "Plasticizer", "Filler"])
+    if q6 == "Plasticizer":
+        score += 1
 
-   
+    # Q7
+    q7 = st.radio("7. Which polymer is used in biodegradable applications?",
+                ["PHBV", "Polyethylene", "PVC"])
+    if q7 == "PHBV":
+        score += 1
+
+    # Q8
+    q8 = st.radio("8. Carbon fiber composites are mainly used in:",
+                ["Cooking utensils", "Aerospace", "Paper industry"])
+    if q8 == "Aerospace":
+        score += 1
+
+    # RESULT
+    if st.button("Submit Quiz 🚀"):
+        st.success(f"Your Score: {score}/8")
+
+        if score == 8:
+            st.balloons()
+            st.write("🔥 Perfect! You nailed it!")
+        elif score >= 5:
+            st.write("💪 Good job! Keep improving!")
+        else:
+            st.write("😅 Revise once more!")
