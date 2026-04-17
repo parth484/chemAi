@@ -82,45 +82,11 @@ def get_response(user_input):
     )
     return response.text
 
-#⌬ ⚛︎⚕---------------------Assistant-------------------------------------------------
-
-# 🌈 Stylish UI CSS
-st.markdown("""
-<style>
-.chat-card {
-    background: rgba(28,28,28,0.9);
-    padding: 20px;
-    border-radius: 18px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    margin-bottom: 15px;
-}
-
-.user-msg {
-    background: #00ffd5;
-    color: black;
-    padding: 10px 15px;
-    border-radius: 12px;
-    margin-bottom: 8px;
-    width: fit-content;
-}
-
-.bot-msg {
-    background: #2c2c2c;
-    color: #f1f1f1;
-    padding: 10px 15px;
-    border-radius: 12px;
-    margin-bottom: 8px;
-    width: fit-content;
-}
-</style>
-""", unsafe_allow_html=True)
-
-
-# 🤖 Assistant Section
+#⌬ ⚛︎⚕---------------------Assistant
 if st.session_state.page == "Chem Assistant":
+
     st.subheader("🤖 Chem Assistant")
 
-    # Store chat history
     if "chat" not in st.session_state:
         st.session_state.chat = []
 
@@ -129,18 +95,15 @@ if st.session_state.page == "Chem Assistant":
     if user_input:
         reply = get_response(user_input)
 
-        # Save messages
         st.session_state.chat.append(("user", user_input))
         st.session_state.chat.append(("bot", reply))
 
-    # Display chat
     for role, msg in st.session_state.chat:
         if role == "user":
-            st.markdown(f'<div class="user-msg">👤 {msg}</div>', unsafe_allow_html=True)
+            st.markdown(f"👤 {msg}")
         else:
-            st.markdown(f'<div class="bot-msg">🤖 {msg}</div>', unsafe_allow_html=True)
-            
-#--------------------------------------------------------------------------------------------
+            st.markdown(f"🤖 {msg}")
+
 
 if st.session_state.page == "home":
     st.title("🧬 PolyLearn AI")
