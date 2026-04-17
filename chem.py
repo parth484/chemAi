@@ -82,14 +82,47 @@ def get_response(user_input):
     )
     return response.text
 
-#⌬ ⚛︎⚕---------------------Assistant
+#⌬ ⚛︎⚕---------------------Assistant-----------------------------
+# 🎨 CSS for chat UI
+st.markdown("""
+<style>
+.chat-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-bubble {
+    align-self: flex-end;
+    background: #00ffd5;
+    color: black;
+    padding: 10px 15px;
+    border-radius: 15px 15px 0px 15px;
+    margin: 5px;
+    max-width: 70%;
+}
+
+.bot-bubble {
+    align-self: flex-start;
+    background: #2c2c2c;
+    color: #f1f1f1;
+    padding: 10px 15px;
+    border-radius: 15px 15px 15px 0px;
+    margin: 5px;
+    max-width: 70%;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 if st.session_state.page == "Chem Assistant":
 
     st.subheader("🤖 Chem Assistant")
 
+    # Chat history
     if "chat" not in st.session_state:
         st.session_state.chat = []
 
+    # Input box
     user_input = st.text_input("💬 Ask your chemistry doubt...")
 
     if user_input:
@@ -98,11 +131,21 @@ if st.session_state.page == "Chem Assistant":
         st.session_state.chat.append(("user", user_input))
         st.session_state.chat.append(("bot", reply))
 
+    # Chat container
+    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+
     for role, msg in st.session_state.chat:
         if role == "user":
-            st.markdown(f"👤 {msg}")
+            st.markdown(f'<div class="user-bubble">👤 {msg}</div>', unsafe_allow_html=True)
         else:
-            st.markdown(f"🤖 {msg}")
+            st.markdown(f'<div class="bot-bubble">🤖 {msg}</div>', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Clear chat button
+    if st.button("🗑 Clear Chat"):
+        st.session_state.chat = []
+        st.rerun()
 
 
 if st.session_state.page == "home":
