@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 import datetime
-import base64
+#import base64
 from google import genai
 import streamlit.components.v1 as components
 
@@ -94,18 +94,6 @@ if st.session_state.page == "Chem Assistant":
         reply = get_response(user_input)
         st.write("🤖", reply)
 
-def show_pdf(file_path):
-    with open(file_path, "rb") as f:
-        base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-
-    pdf_display = f"""
-    <iframe src="data:application/pdf;base64,{base64_pdf}" 
-    width="100%" height="600" type="application/pdf"></iframe>
-    """
-
-    st.markdown(pdf_display, unsafe_allow_html=True)
-
-
 
 if st.session_state.page == "home":
     st.title("🧬 PolyLearn AI")
@@ -142,19 +130,20 @@ if st.session_state.page == "notes":
         color: white;
         box-shadow: 0 8px 20px rgba(0,0,0,0.3);
     ">
-        <h3>✨ Features of the App</h3>
 
-        <p><b>📚 Learning Made Easy:</b><br>
-        This app explains polymer concepts in a simple and structured way.</p>
+        <h3>✨ Contents</h3>
 
-        <p><b>🧪 Interactive Quizzes:</b><br>
-        Practice with quizzes that reinforce your knowledge.</p>
-
-        <p><b>🤖 AI Chatbot Support:</b><br>
-        Ask any doubt anytime and get instant explanations.</p>
+        <p>
+        1. Introduction<br>
+        2. Engineering Thermoplastics<br>
+        3. Biodegradable Polymers<br>
+        4. Conducting Polymers<br>
+        5. Electroluminescent Polymers<br>
+        6. Polymer Composites<br>
+        7. Compounding of Plastics
+        </p>
 
     </div>
     """, height=300)
 
-    # call function pdfff
-    show_pdf("Chem 4 real.pdf")
+   
