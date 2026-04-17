@@ -44,8 +44,8 @@ if st.sidebar.button("Home"):
 if st.sidebar.button("Chem Assistant"):
     st.session_state.page = "Chem Assistant"
 
-if st.sidebar.button("Notes"):
-    st.session_state.page = "notes"
+if st.sidebar.button("Quiz"):
+    st.session_state.page = "quiz"
 
 
 st.sidebar.markdown("---")
@@ -122,10 +122,14 @@ if st.session_state.page == "Chem Assistant":
     if "chat" not in st.session_state:
         st.session_state.chat = []
 
-    # Input box
-    user_input = st.text_input("💬 Ask your chemistry doubt...")
 
-    if user_input:
+    # Input box
+    # 💬 FORM (this auto clears input)
+    with st.form(key="chat_form", clear_on_submit=True):
+        user_input = st.text_input("💬 Ask your chemistry doubt...")
+        submitted = st.form_submit_button("Send 🚀")
+
+    if submitted and user_input:
         reply = get_response(user_input)
 
         st.session_state.chat.append(("user", user_input))
@@ -147,7 +151,7 @@ if st.session_state.page == "Chem Assistant":
         st.session_state.chat = []
         st.rerun()
 
-
+#-------------------------------Home------------------------------
 if st.session_state.page == "home":
     st.title("🧬 PolyLearn AI")
     st.caption("🚀 Interactive Polymer Learning App with AI Chatbot")
@@ -171,8 +175,8 @@ if st.session_state.page == "home":
  
  #------------------Quiz------------------------   
 
-if st.session_state.page == "notes":
-    st.subheader("⌬ Notes")     
+if st.session_state.page == "quiz":
+    st.subheader("⌬ Quiz")     
     st.title("Polymers in Engineering")  
     st.title("🧪 Polymers Quiz")
 
