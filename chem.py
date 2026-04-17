@@ -115,72 +115,76 @@ if st.session_state.page == "home":
     </div>
     """, unsafe_allow_html=True)
  
-    
+ #------------------Quiz------------------------   
 
 if st.session_state.page == "notes":
     st.subheader("⌬ Notes")     
-     
-
+    st.title("Polymers in Engineering")  
     st.title("🧪 Polymers Quiz")
 
-    score = 0
+    # Questions
+    questions = [
+        {
+            "q": "Which polymer is biodegradable?",
+            "options": ["PVC", "PHBV", "Polystyrene"],
+            "ans": "PHBV"
+        },
+        {
+            "q": "Engineering thermoplastics are known for:",
+            "options": ["Low strength", "High strength & durability", "Only flexibility"],
+            "ans": "High strength & durability"
+        },
+        {
+            "q": "Conducting polymers conduct electricity due to:",
+            "options": ["Heat", "Electron movement", "Water content"],
+            "ans": "Electron movement"
+        },
+        {
+            "q": "OLED works on which principle?",
+            "options": ["Heat emission", "Electroluminescence", "Magnetism"],
+            "ans": "Electroluminescence"
+        },
+        {
+            "q": "FRP stands for:",
+            "options": ["Flexible Resin Polymer", "Fiber Reinforced Plastic", "Fast Reactive Polymer"],
+            "ans": "Fiber Reinforced Plastic"
+        }
+    ]
 
-    # Q1
-    q1 = st.radio("1. Which polymer is biodegradable?",
-                ["PVC", "PHBV", "Polystyrene"])
-    if q1 == "PHBV":
-        score += 1
+    # Session state
+    if "q_index" not in st.session_state:
+        st.session_state.q_index = 0
+        st.session_state.score = 0
 
-    # Q2
-    q2 = st.radio("2. Engineering thermoplastics are known for:",
-                ["Low strength", "High strength & durability", "Only flexibility"])
-    if q2 == "High strength & durability":
-        score += 1
+    # Current question
+    q = questions[st.session_state.q_index]
 
-    # Q3
-    q3 = st.radio("3. Conducting polymers conduct electricity due to:",
-                ["Heat", "Electron movement", "Water content"])
-    if q3 == "Electron movement":
-        score += 1
+    st.subheader(f"Question {st.session_state.q_index + 1}")
 
-    # Q4
-    q4 = st.radio("4. OLED works on which principle?",
-                ["Heat emission", "Electroluminescence", "Magnetism"])
-    if q4 == "Electroluminescence":
-        score += 1
+    selected = st.radio(
+        q["q"],
+        ["-- Select an option --"] + q["options"],
+        key=st.session_state.q_index
+    )
 
-    # Q5
-    q5 = st.radio("5. FRP stands for:",
-                ["Flexible Resin Polymer", "Fiber Reinforced Plastic", "Fast Reactive Polymer"])
-    if q5 == "Fiber Reinforced Plastic":
-        score += 1
-
-    # Q6
-    q6 = st.radio("6. Which is used to increase flexibility of plastics?",
-                ["Stabilizer", "Plasticizer", "Filler"])
-    if q6 == "Plasticizer":
-        score += 1
-
-    # Q7
-    q7 = st.radio("7. Which polymer is used in biodegradable applications?",
-                ["PHBV", "Polyethylene", "PVC"])
-    if q7 == "PHBV":
-        score += 1
-
-    # Q8
-    q8 = st.radio("8. Carbon fiber composites are mainly used in:",
-                ["Cooking utensils", "Aerospace", "Paper industry"])
-    if q8 == "Aerospace":
-        score += 1
-
-    # RESULT
-    if st.button("Submit Quiz 🚀"):
-        st.success(f"Your Score: {score}/8")
-
-        if score == 8:
-            st.balloons()
-            st.write("🔥 Perfect! You nailed it!")
-        elif score >= 5:
-            st.write("💪 Good job! Keep improving!")
+    # Next button
+    if st.button("Next ➡️"):
+        if selected == "-- Select an option --":
+            st.warning("⚠️ Please select an option!")
         else:
-            st.write("😅 Revise once more!")
+            if selected == q["ans"]:
+                st.session_state.score += 1
+
+            st.session_state.q_index += 1
+
+            # If quiz finished
+            if st.session_state.q_index >= len(questions):
+                st.success(f"🎉 Quiz Completed! Score: {st.session_state.score}/{len(questions)}")
+                st.balloons()
+
+                # Reset button
+                if st.button("Restart Quiz 🔄"):
+                    st.session_state.q_index = 0
+                    st.session_state.score = 0
+            else:
+                st.rerun()
