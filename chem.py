@@ -178,35 +178,48 @@ if st.session_state.page == "home":
 
 @st.cache_data(ttl=3600)
 def generate_ai_questions(topic="Polymers in Engineering", num_q=2):
+
     prompt = f"""
     Generate {num_q} multiple choice questions on {topic}.
 
-    Format strictly in JSON:
+    Return ONLY valid JSON array. No explanation.
+
+    Example format:
     [
       {{
         "q": "question",
-        "options": ["opt1", "opt2", "opt3", "opt4"],
-        "ans": "correct option",
+        "options": ["A", "B", "C", "D"],
+        "ans": "A",
         "exp": "short explanation"
       }}
     ]
     """
 
-    try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
+    for _ in range(3):  # 🔥 retry 3 times
+        try:
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt
+            )
 
-        match = re.search(r"\[.*\]", response.text, re.DOTALL)
-        clean_text = match.group(0) if match else "[]"
+            text = response.text.strip()
 
-        return json.loads(clean_text)
+            # safer JSON extraction
+            start = text.find("[")
+            end = text.rfind("]")
 
-    except Exception as e:
-        print("AI Error:", e)
-        return []
+            if start != -1 and end != -1:
+                json_text = text[start:end+1]
+                data = json.loads(json_text)
 
+                # validate structure
+                if isinstance(data, list) and len(data) > 0:
+                    return data
+
+        except Exception as e:
+            print("Retrying due to:", e)
+
+    return []  # fallback
 
 # ================== QUIZ PAGE ==================
 
