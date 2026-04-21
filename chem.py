@@ -4,6 +4,7 @@ import datetime
 from google import genai
 import json, re
 import streamlit.components.v1 as components
+from google.genai import types
 
 if "page" not in st.session_state:
     st.session_state.page = "home"
@@ -199,7 +200,17 @@ def generate_ai_questions(topic="Polymers in Engineering", num_q=2):
         try:
             response = client.models.generate_content(
                 model="gemini-2.5-flash",
-                contents=prompt
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json", # Forces Gemini to send pure JSON
+                    temperature=0.4, # Lower temperature = more stable JSON
+                    safety_settings=[
+                        types.SafetySetting(
+                            category="HARM_CATEGORY_DANGEROUS_CONTENT",
+                            threshold="BLOCK_ONLY_HIGH",
+                        )
+                    ]
+                )
             )
 
             text = response.text.strip()
