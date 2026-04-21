@@ -178,32 +178,21 @@ if st.session_state.page == "home":
 # ================== AI QUIZ FUNCTION ==================
 
 @st.cache_data(ttl=3600)
-def generate_ai_questions(topic="Polymers in Engineering", num_q=2):
-
+def generate_ai_questions(topic="Polymers in Engineering", num_q=2,seed=0):
     prompt = f"""
     Generate {num_q} multiple choice questions on {topic}.
-
-    Return ONLY valid JSON array. No explanation.
-
-    Example format:
-    [
-      {{
-        "q": "question",
-        "options": ["A", "B", "C", "D"],
-        "ans": "A",
-        "exp": "short explanation"
-      }}
-    ]
+    Return a JSON array of objects.
     """
 
-    for _ in range(3):  # 🔥 retry 3 times
+    for _ in range(3):  # Retry loop
         try:
             response = client.models.generate_content(
                 model="gemini-2.5-flash",
                 contents=prompt,
                 config=types.GenerateContentConfig(
-                    response_mime_type="application/json", # Forces Gemini to send pure JSON
-                    temperature=0.4, # Lower temperature = more stable JSON
+                    # This forces the model to ONLY output JSON
+                    response_mime_type="application/json",
+                    temperature=0.3,
                     safety_settings=[
                         types.SafetySetting(
                             category="HARM_CATEGORY_DANGEROUS_CONTENT",
@@ -213,25 +202,16 @@ def generate_ai_questions(topic="Polymers in Engineering", num_q=2):
                 )
             )
 
-            text = response.text.strip()
+            # Since we set response_mime_type, response.text is already clean JSON
+            data = json.loads(response.text)
 
-            # safer JSON extraction
-            start = text.find("[")
-            end = text.rfind("]")
-
-            if start != -1 and end != -1:
-                json_text = text[start:end+1]
-                data = json.loads(json_text)
-
-                # validate structure
-                if isinstance(data, list) and len(data) > 0:
-                    return data
+            if isinstance(data, list) and len(data) > 0:
+                return data
 
         except Exception as e:
             print("Retrying due to:", e)
 
-    return []  # fallback
-
+    return []
 # ================== QUIZ PAGE ==================
 
 if st.session_state.get("page") == "quiz":
@@ -239,19 +219,18 @@ if st.session_state.get("page") == "quiz":
     st.title("🧪 AI Powered Quiz")
 
     # 🎯 Generate button
+    # 🎯 Generate button
     if "questions" not in st.session_state:
-
         if st.button("🎯 Generate Quiz"):
             with st.spinner("🧠 Generating Quiz..."):
-                st.session_state.questions = generate_ai_questions()
+                # Pass the current timestamp as a seed to bypass the cache
+                current_seed = datetime.datetime.now().timestamp() 
+                st.session_state.questions = generate_ai_questions(seed=current_seed)
 
             st.session_state.q_index = 0
             st.session_state.score = 0
             st.session_state.user_answers = []
             st.rerun()
-
-        st.info("👆 Click to generate AI quiz")
-        st.stop()
 
     questions = st.session_state.questions
 
@@ -261,7 +240,9 @@ if st.session_state.get("page") == "quiz":
 
         if st.button("Retry 🔄"):
             with st.spinner("🔄 Retrying..."):
-                st.session_state.questions = generate_ai_questions()
+                # 🔥 KEY UPDATE: Add a fresh seed here just like the Generate button
+                retry_seed = datetime.datetime.now().timestamp() 
+                st.session_state.questions = generate_ai_questions(seed=retry_seed)
             st.rerun()
 
         st.stop()
