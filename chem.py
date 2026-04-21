@@ -177,7 +177,7 @@ if st.session_state.page == "home":
 # ================== AI QUIZ FUNCTION ==================
 
 @st.cache_data(ttl=3600)
-def generate_ai_questions(topic="Polymers in Engineering", num_q=10):
+def generate_ai_questions(topic="Polymers in Engineering", num_q=2):
     prompt = f"""
     Generate {num_q} multiple choice questions on {topic}.
 
