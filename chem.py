@@ -174,8 +174,9 @@ if st.session_state.page == "home":
     </div>
     """, unsafe_allow_html=True)
  
-# 🎯 Function: Generate AI Questions--------------------------------------------------------------------------
+# ================== AI QUIZ FUNCTION ==================
 
+@st.cache_data(ttl=3600)
 def generate_ai_questions(topic="Polymers in Engineering", num_q=10):
     prompt = f"""
     Generate {num_q} multiple choice questions on {topic}.
@@ -189,61 +190,62 @@ def generate_ai_questions(topic="Polymers in Engineering", num_q=10):
         "exp": "short explanation"
       }}
     ]
-
-    Rules:
-    - 4 options compulsory
-    - Explanation must be 1-2 lines
-    - Only return JSON
     """
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
-
-    def extract_json(text):
-        match = re.search(r"\[.*\]", text, re.DOTALL)
-        return match.group(0) if match else "[]"
-
-    clean_text = extract_json(response.text)
-
     try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
+
+        match = re.search(r"\[.*\]", response.text, re.DOTALL)
+        clean_text = match.group(0) if match else "[]"
+
         return json.loads(clean_text)
-    except:
+
+    except Exception as e:
+        print("AI Error:", e)
         return []
 
+
 # ================== QUIZ PAGE ==================
+
 if st.session_state.get("page") == "quiz":
 
     st.title("🧪 AI Powered Quiz")
 
-    # 🧠 Generate Questions with Loading
+    # 🎯 Generate button (NO auto API call)
     if "questions" not in st.session_state:
-        with st.spinner("🧠 Generating Quiz... Please wait ⏳"):
-            st.session_state.questions = generate_ai_questions()
 
-    # 🧾 Initialize states
-    if "q_index" not in st.session_state:
-        st.session_state.q_index = 0
-        st.session_state.score = 0
-        st.session_state.user_answers = []
+        if st.button("🎯 Generate Quiz"):
+            with st.spinner("🧠 Generating Quiz..."):
+                st.session_state.questions = generate_ai_questions()
+
+            st.session_state.q_index = 0
+            st.session_state.score = 0
+            st.session_state.user_answers = []
+            st.rerun()
+
+        st.info("👆 Click to generate AI quiz")
+        st.stop()
 
     questions = st.session_state.questions
 
-    # ⚠️ Handle empty/failed AI response
+    # ❌ If AI failed
     if not questions:
-        st.error("⚠️ Failed to generate quiz. Please try again.")
+        st.error("⚠️ Failed to generate quiz.")
 
         if st.button("Retry 🔄"):
-            st.session_state.questions = generate_ai_questions()
+            with st.spinner("🔄 Retrying..."):
+                st.session_state.questions = generate_ai_questions()
             st.rerun()
 
         st.stop()
 
-    # 🏁 If quiz finished
+    # 🏁 QUIZ FINISHED
     if st.session_state.q_index >= len(questions):
 
-        st.success(f"🎉 Quiz Completed! Score: {st.session_state.score}/{len(questions)}")
+        st.success(f"🎉 Score: {st.session_state.score}/{len(questions)}")
         st.balloons()
 
         st.markdown("## 📘 Explanations")
@@ -251,43 +253,37 @@ if st.session_state.get("page") == "quiz":
         for i, q in enumerate(questions):
             user_ans = st.session_state.user_answers[i]
 
-            if user_ans == q["ans"]:
-                st.markdown(f"✅ **Q{i+1}: {q['q']}**")
-            else:
-                st.markdown(f"❌ **Q{i+1}: {q['q']}**")
-
+            st.markdown(f"### Q{i+1}: {q['q']}")
             st.markdown(f"- Your Answer: {user_ans}")
             st.markdown(f"- Correct Answer: {q['ans']}")
-            st.markdown(f"- 💡 Explanation: {q['exp']}")
+            st.markdown(f"- 💡 {q['exp']}")
             st.markdown("---")
 
         # 🔄 Restart
         if st.button("Restart Quiz 🔄"):
-            with st.spinner("🧠 Generating New Quiz..."):
-                st.session_state.questions = generate_ai_questions()
+            st.session_state.pop("questions")
             st.session_state.q_index = 0
             st.session_state.score = 0
             st.session_state.user_answers = []
             st.rerun()
 
     else:
-        # 📊 Progress bar
+        # 📊 Progress
         st.progress(st.session_state.q_index / len(questions))
 
-        # 📍 Current Question
         q = questions[st.session_state.q_index]
 
         st.subheader(f"Question {st.session_state.q_index + 1} / {len(questions)}")
+
         selected = st.radio(
             q["q"],
             ["-- Select an option --"] + q["options"],
             key=f"q_{st.session_state.q_index}"
         )
 
-        # ➡️ Next Button
         if st.button("Next ➡️"):
             if selected == "-- Select an option --":
-                st.warning("⚠️ Please select an option!")
+                st.warning("⚠️ Select an option")
             else:
                 st.session_state.user_answers.append(selected)
 
