@@ -227,7 +227,7 @@ if st.session_state.get("page") == "quiz":
 
     st.title("🧪 AI Powered Quiz")
 
-    # 🎯 Generate button (NO auto API call)
+    # 🎯 Generate button
     if "questions" not in st.session_state:
 
         if st.button("🎯 Generate Quiz"):
@@ -266,15 +266,22 @@ if st.session_state.get("page") == "quiz":
         for i, q in enumerate(questions):
             user_ans = st.session_state.user_answers[i]
 
+            # 🔥 Fix for displaying full correct option
+            correct_full = next(
+                (opt for opt in q["options"] if opt.lower().startswith(q["ans"].lower())),
+                q["ans"]
+            )
+
             st.markdown(f"### Q{i+1}: {q['q']}")
             st.markdown(f"- Your Answer: {user_ans}")
-            st.markdown(f"- Correct Answer: {q['ans']}")
+            st.markdown(f"- Correct Answer: {correct_full}")
             st.markdown(f"- 💡 {q['exp']}")
             st.markdown("---")
 
         # 🔄 Restart
         if st.button("Restart Quiz 🔄"):
-            st.session_state.pop("questions")
+            st.cache_data.clear()  # 🔥 important
+            st.session_state.pop("questions", None)
             st.session_state.q_index = 0
             st.session_state.score = 0
             st.session_state.user_answers = []
@@ -300,7 +307,11 @@ if st.session_state.get("page") == "quiz":
             else:
                 st.session_state.user_answers.append(selected)
 
-                if selected == q["ans"]:
+                # 🔥 FINAL FIX (important)
+                selected_letter = selected.split(")")[0].strip().lower()
+                correct_letter = q["ans"].split(")")[0].strip().lower()
+
+                if selected_letter == correct_letter:
                     st.session_state.score += 1
 
                 st.session_state.q_index += 1
