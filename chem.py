@@ -2,6 +2,7 @@ import streamlit as st
 import os
 import datetime
 from google import genai
+import json, re
 import streamlit.components.v1 as components
 
 if "page" not in st.session_state:
@@ -137,7 +138,7 @@ if st.session_state.page == "Chem Assistant":
 
     # Chat container
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-
+    #displaying chats________
     for role, msg in st.session_state.chat:
         if role == "user":
             st.markdown(f'<div class="user-bubble">👤 {msg}</div>', unsafe_allow_html=True)
@@ -173,76 +174,125 @@ if st.session_state.page == "home":
     </div>
     """, unsafe_allow_html=True)
  
- #------------------Quiz------------------------   
+# 🎯 Function: Generate AI Questions--------------------------------------------------------------------------
 
-if st.session_state.page == "quiz":
-    st.subheader("⌬ Quiz")     
-    st.title("Polymers in Engineering")  
-    st.title("🧪 Polymers Quiz")
+def generate_ai_questions(topic="Polymers in Engineering", num_q=10):
+    prompt = f"""
+    Generate {num_q} multiple choice questions on {topic}.
 
-    # Questions
-    questions = [
-        {
-            "q": "Which polymer is biodegradable?",
-            "options": ["PVC", "PHBV", "Polystyrene"],
-            "ans": "PHBV"
-        },
-        {
-            "q": "Engineering thermoplastics are known for:",
-            "options": ["Low strength", "High strength & durability", "Only flexibility"],
-            "ans": "High strength & durability"
-        },
-        {
-            "q": "Conducting polymers conduct electricity due to:",
-            "options": ["Heat", "Electron movement", "Water content"],
-            "ans": "Electron movement"
-        },
-        {
-            "q": "OLED works on which principle?",
-            "options": ["Heat emission", "Electroluminescence", "Magnetism"],
-            "ans": "Electroluminescence"
-        },
-        {
-            "q": "FRP stands for:",
-            "options": ["Flexible Resin Polymer", "Fiber Reinforced Plastic", "Fast Reactive Polymer"],
-            "ans": "Fiber Reinforced Plastic"
-        }
+    Format strictly in JSON:
+    [
+      {{
+        "q": "question",
+        "options": ["opt1", "opt2", "opt3", "opt4"],
+        "ans": "correct option",
+        "exp": "short explanation"
+      }}
     ]
 
-    # Session state
+    Rules:
+    - 4 options compulsory
+    - Explanation must be 1-2 lines
+    - Only return JSON
+    """
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
+    )
+
+    def extract_json(text):
+        match = re.search(r"\[.*\]", text, re.DOTALL)
+        return match.group(0) if match else "[]"
+
+    clean_text = extract_json(response.text)
+
+    try:
+        return json.loads(clean_text)
+    except:
+        return []
+
+# ================== QUIZ PAGE ==================
+if st.session_state.get("page") == "quiz":
+
+    st.title("🧪 AI Powered Quiz")
+
+    # 🧠 Generate Questions with Loading
+    if "questions" not in st.session_state:
+        with st.spinner("🧠 Generating Quiz... Please wait ⏳"):
+            st.session_state.questions = generate_ai_questions()
+
+    # 🧾 Initialize states
     if "q_index" not in st.session_state:
         st.session_state.q_index = 0
         st.session_state.score = 0
+        st.session_state.user_answers = []
 
-    # Current question
-    q = questions[st.session_state.q_index]
+    questions = st.session_state.questions
 
-    st.subheader(f"Question {st.session_state.q_index + 1}")
+    # ⚠️ Handle empty/failed AI response
+    if not questions:
+        st.error("⚠️ Failed to generate quiz. Please try again.")
 
-    selected = st.radio(
-        q["q"],
-        ["-- Select an option --"] + q["options"],
-        key=st.session_state.q_index
-    )
+        if st.button("Retry 🔄"):
+            st.session_state.questions = generate_ai_questions()
+            st.rerun()
 
-    # Next button
-    if st.button("Next ➡️"):
-        if selected == "-- Select an option --":
-            st.warning("⚠️ Please select an option!")
-        else:
-            if selected == q["ans"]:
-                st.session_state.score += 1
+        st.stop()
 
-            st.session_state.q_index += 1
+    # 🏁 If quiz finished
+    if st.session_state.q_index >= len(questions):
 
-            # If quiz finished
-            if st.session_state.q_index >= len(questions):
-                st.success(f"🎉 Quiz Completed! Score: {st.session_state.score}/{len(questions)}")
-                st.balloons()
+        st.success(f"🎉 Quiz Completed! Score: {st.session_state.score}/{len(questions)}")
+        st.balloons()
 
-                # Reset button
-                if st.button("Restart Quiz 🔄"):
-                    st.session_state.q_index = 0
-                    st.session_state.score = 0
+        st.markdown("## 📘 Explanations")
+
+        for i, q in enumerate(questions):
+            user_ans = st.session_state.user_answers[i]
+
+            if user_ans == q["ans"]:
+                st.markdown(f"✅ **Q{i+1}: {q['q']}**")
             else:
+                st.markdown(f"❌ **Q{i+1}: {q['q']}**")
+
+            st.markdown(f"- Your Answer: {user_ans}")
+            st.markdown(f"- Correct Answer: {q['ans']}")
+            st.markdown(f"- 💡 Explanation: {q['exp']}")
+            st.markdown("---")
+
+        # 🔄 Restart
+        if st.button("Restart Quiz 🔄"):
+            with st.spinner("🧠 Generating New Quiz..."):
+                st.session_state.questions = generate_ai_questions()
+            st.session_state.q_index = 0
+            st.session_state.score = 0
+            st.session_state.user_answers = []
+            st.rerun()
+
+    else:
+        # 📊 Progress bar
+        st.progress(st.session_state.q_index / len(questions))
+
+        # 📍 Current Question
+        q = questions[st.session_state.q_index]
+
+        st.subheader(f"Question {st.session_state.q_index + 1} / {len(questions)}")
+        selected = st.radio(
+            q["q"],
+            ["-- Select an option --"] + q["options"],
+            key=f"q_{st.session_state.q_index}"
+        )
+
+        # ➡️ Next Button
+        if st.button("Next ➡️"):
+            if selected == "-- Select an option --":
+                st.warning("⚠️ Please select an option!")
+            else:
+                st.session_state.user_answers.append(selected)
+
+                if selected == q["ans"]:
+                    st.session_state.score += 1
+
+                st.session_state.q_index += 1
                 st.rerun()
