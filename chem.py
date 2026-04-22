@@ -230,23 +230,36 @@ def generate_ai_questions(topic="Polymers in Engineering", num_q=2,seed=0):
 if st.session_state.get("page") == "quiz":
 
     st.title("🧪 AI Powered Quiz")
-
+    
+   
     # 🎯 Generate button
     # 🎯 Generate button
+    # ✅ Always initialize first
     if "questions" not in st.session_state:
-        if st.button("🎯 Generate Quiz"):
-            with st.spinner("🧠 Generating Quiz..."):
-                # Pass the current timestamp as a seed to bypass the cache
-                current_seed = datetime.datetime.now().timestamp() 
-                st.session_state.questions = generate_ai_questions(seed=current_seed)
+        st.session_state.questions = []
 
-            st.session_state.q_index = 0
-            st.session_state.score = 0
-            st.session_state.user_answers = []
-            st.rerun()
+    if "q_index" not in st.session_state:
+        st.session_state.q_index = 0
 
+    if "score" not in st.session_state:
+        st.session_state.score = 0
+
+    if "user_answers" not in st.session_state:
+        st.session_state.user_answers = []
+
+    # 🎯 Generate button (NO condition)
+    if st.button("🎯 Generate Quiz"):
+        with st.spinner("🧠 Generating Quiz..."):
+            current_seed = datetime.datetime.now().timestamp()
+            st.session_state.questions = generate_ai_questions(seed=current_seed)
+
+        st.session_state.q_index = 0
+        st.session_state.score = 0
+        st.session_state.user_answers = []
+        st.rerun()
+
+    # ✅ Safe access
     questions = st.session_state.questions
-
     # ❌ If AI failed
     if not questions:
         st.error("⚠️ Failed to generate quiz.")
