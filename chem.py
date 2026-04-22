@@ -235,8 +235,7 @@ if st.session_state.get("page") == "quiz":
     # 🎯 Generate button
     # 🎯 Generate button
     # ✅ Always initialize first
-    if "questions" not in st.session_state:
-        st.session_state.questions = []
+    questions = st.session_state.get("questions", None)
 
     if "q_index" not in st.session_state:
         st.session_state.q_index = 0
@@ -259,15 +258,20 @@ if st.session_state.get("page") == "quiz":
         st.rerun()
 
     # ✅ Safe access
-    questions = st.session_state.questions
-    # ❌ If AI failed
-    if not questions:
+    questions = st.session_state.get("questions", None)
+
+    # 🟡 Not generated yet
+    if questions is None:
+        st.info("👆 Click Generate Quiz to start")
+        st.stop()
+
+    # 🔴 Failed case
+    if isinstance(questions, list) and len(questions) == 0:
         st.error("⚠️ Failed to generate quiz.")
 
         if st.button("Retry 🔄"):
             with st.spinner("🔄 Retrying..."):
-                # 🔥 KEY UPDATE: Add a fresh seed here just like the Generate button
-                retry_seed = datetime.datetime.now().timestamp() 
+                retry_seed = datetime.datetime.now().timestamp()
                 st.session_state.questions = generate_ai_questions(seed=retry_seed)
             st.rerun()
 
