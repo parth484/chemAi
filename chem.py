@@ -180,8 +180,21 @@ if st.session_state.page == "home":
 @st.cache_data(ttl=3600)
 def generate_ai_questions(topic="Polymers in Engineering", num_q=2,seed=0):
     prompt = f"""
+    Seed: {seed}
+
     Generate {num_q} multiple choice questions on {topic}.
-    Return a JSON array of objects.
+
+    Return ONLY valid JSON array.
+
+    Format:
+    [
+    {{
+        "q": "Question",
+        "options": ["A", "B", "C", "D"],
+        "ans": "Correct option",
+        "exp": "Short explanation"
+    }}
+    ]
     """
 
     for _ in range(3):  # Retry loop
@@ -299,11 +312,8 @@ if st.session_state.get("page") == "quiz":
             else:
                 st.session_state.user_answers.append(selected)
 
-                # 🔥 FINAL FIX (important)
-                selected_letter = selected.split(")")[0].strip().lower()
-                correct_letter = q["ans"].split(")")[0].strip().lower()
-
-                if selected_letter == correct_letter:
+                # ✅ FIXED ANSWER CHECKING
+                if selected.strip().lower() == q["ans"].strip().lower():
                     st.session_state.score += 1
 
                 st.session_state.q_index += 1
