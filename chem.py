@@ -1,21 +1,331 @@
+# import streamlit as st
+# import os
+# import datetime
+# from google import genai
+# import json, re
+# import streamlit.components.v1 as components
+# from google.genai import types
+
+# if "page" not in st.session_state:
+#     st.session_state.page = "home"
+
+# client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+
+# st.set_page_config("Chem-Ai",layout="wide")
+# st.title("ChemAssist-Ai")
+
+
+# #---------for creating pallet or cards----------------
+# st.markdown("""
+# <style>
+# .card {
+#     background: rgba(255, 255, 255, 0.05);
+#     padding: 20px;
+#     border-radius: 15px;
+#     box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+#     backdrop-filter: blur(10px);
+#     margin-bottom: 20px;
+# }
+# </style>
+# """, unsafe_allow_html=True)
+
+
+# st.markdown(
+# """
+# <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+# """,
+# unsafe_allow_html=True
+# )
+
+
+# st.sidebar.title("Navigation")
+
+# if st.sidebar.button("Home"):
+#     st.session_state.page = "home"
+
+# if st.sidebar.button("Chem Assistant"):
+#     st.session_state.page = "Chem Assistant"
+
+# if st.sidebar.button("Quiz"):
+#     st.session_state.page = "quiz"
+
+
+# st.sidebar.markdown("---")
+
+# st.sidebar.markdown(
+#  """
+# <div style="display:flex; justify-content:center; gap:20px; margin-top:20px;">
+# <a href="https://www.linkedin.com/in/parth-adsul-889106384/" target="_blank">
+# <i class="fab fa-linkedin" style="font-size:34px; color:#0A66C2;"></i>
+# </a>
+
+# <a href="https://github.com/parth484" target="_blank">
+# <i class="fab fa-github" style="font-size:34px; color:black;"></i>
+# </a>
+# </div>
+
+# <p style="text-align:center; font-size:12px; margin-top:8px;">
+# Made by Parth Adsul
+# </p>
+# """,
+# unsafe_allow_html=True
+# )    
+
+# def get_response(user_input):
+#     response = client.models.generate_content(
+#         model="gemini-2.5-flash",  # stable model
+#         contents=f"""
+#         You are a chemistry tutor. Only answer chemistry-related questions.
+#         If the question is not related to chemistry, say:
+#         'I only answer chemistry questions 😊'(but if (hi or bro or something other calling name(greeting)) is user input; then answer it as chem tutor)
+
+#         Question: {user_input}
+#         """
+#     )
+#     return response.text
+
+# #⌬ ⚛︎⚕---------------------Assistant-----------------------------
+# # 🎨 CSS for chat UI
+# st.markdown("""
+# <style>
+# .chat-container {
+#     display: flex;
+#     flex-direction: column;
+# }
+
+# .user-bubble {
+#     align-self: flex-end;
+#     background: #00ffd5;
+#     color: black;
+#     padding: 10px 15px;
+#     border-radius: 15px 15px 0px 15px;
+#     margin: 5px;
+#     max-width: 70%;
+# }
+
+# .bot-bubble {
+#     align-self: flex-start;
+#     background: #2c2c2c;
+#     color: #f1f1f1;
+#     padding: 10px 15px;
+#     border-radius: 15px 15px 15px 0px;
+#     margin: 5px;
+#     max-width: 70%;
+# }
+# </style>
+# """, unsafe_allow_html=True)
+
+
+# if st.session_state.page == "Chem Assistant":
+
+#     st.subheader("🤖 Chem Assistant")
+
+#     # Chat history
+#     if "chat" not in st.session_state:
+#         st.session_state.chat = []
+
+
+#     # Input box
+#     # 💬 FORM (this auto clears input)
+#     with st.form(key="chat_form", clear_on_submit=True):
+#         user_input = st.text_input("💬 Ask your chemistry doubt...")
+#         submitted = st.form_submit_button("Send 🚀")
+
+#     if submitted and user_input:
+#         reply = get_response(user_input)
+
+#         st.session_state.chat.append(("user", user_input))
+#         st.session_state.chat.append(("bot", reply))
+
+#     # Chat container
+#     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+#     #displaying chats________
+#     for role, msg in st.session_state.chat:
+#         if role == "user":
+#             st.markdown(f'<div class="user-bubble">👤 {msg}</div>', unsafe_allow_html=True)
+#         else:
+#             st.markdown(f'<div class="bot-bubble">🤖 {msg}</div>', unsafe_allow_html=True)
+
+#     st.markdown('</div>', unsafe_allow_html=True)
+
+#     # Clear chat button
+#     if st.button("🗑 Clear Chat"):
+#         st.session_state.chat = []
+#         st.rerun()
+
+# #-------------------------------Home------------------------------
+# if st.session_state.page == "home":
+#     st.title("🧬 PolyLearn AI")
+#     st.caption("🚀 Interactive Polymer Learning App with AI Chatbot")
+
+#     st.markdown("""
+#     ### 👨‍🎓 Developed by: Parth  
+#     ### 📘 Subject: Chemistry (Polymers)  
+#     ### 🏫 DYPCOE  
+#     """)
+
+#     st.markdown("""
+#     <div class="card">
+#         <h3>✨ Features of the App</h3>
+#         <ul>
+#             <li>📚 Learn polymer concepts easily</li>
+#             <li>🧪 Test knowledge with quizzes</li>
+#             <li>🤖 Ask doubts using AI chatbot</li>
+#         </ul>
+#     </div>
+#     """, unsafe_allow_html=True)
+ 
+# # ================== AI QUIZ FUNCTION ==================
+
+# @st.cache_data(ttl=3600)
+# def generate_ai_questions(topic="Polymers in Engineering", num_q=2,seed=0):
+#     prompt = f"""
+#     Generate {num_q} multiple choice questions on {topic}.
+#     Return a JSON array of objects.
+#     """
+
+#     for _ in range(3):  # Retry loop
+#         try:
+#             response = client.models.generate_content(
+#                 model="gemini-2.5-flash",
+#                 contents=prompt,
+#                 config=types.GenerateContentConfig(
+#                     # This forces the model to ONLY output JSON
+#                     response_mime_type="application/json",
+#                     temperature=0.3,
+#                     safety_settings=[
+#                         types.SafetySetting(
+#                             category="HARM_CATEGORY_DANGEROUS_CONTENT",
+#                             threshold="BLOCK_ONLY_HIGH",
+#                         )
+#                     ]
+#                 )
+#             )
+
+#             # Since we set response_mime_type, response.text is already clean JSON
+#             data = json.loads(response.text)
+
+#             if isinstance(data, list) and len(data) > 0:
+#                 return data
+
+#         except Exception as e:
+#             print("Retrying due to:", e)
+
+#     return []
+# # ================== QUIZ PAGE ==================
+
+# if st.session_state.get("page") == "quiz":
+
+#     st.title("🧪 AI Powered Quiz")
+
+#     # 🎯 Generate button
+#     # 🎯 Generate button
+#     if "questions" not in st.session_state:
+#         if st.button("🎯 Generate Quiz"):
+#             with st.spinner("🧠 Generating Quiz..."):
+#                 # Pass the current timestamp as a seed to bypass the cache
+#                 current_seed = datetime.datetime.now().timestamp() 
+#                 st.session_state.questions = generate_ai_questions(seed=current_seed)
+
+#             st.session_state.q_index = 0
+#             st.session_state.score = 0
+#             st.session_state.user_answers = []
+#             st.rerun()
+
+#     questions = st.session_state.questions
+
+#     # ❌ If AI failed
+#     if not questions:
+#         st.error("⚠️ Failed to generate quiz.")
+
+#         if st.button("Retry 🔄"):
+#             with st.spinner("🔄 Retrying..."):
+#                 # 🔥 KEY UPDATE: Add a fresh seed here just like the Generate button
+#                 retry_seed = datetime.datetime.now().timestamp() 
+#                 st.session_state.questions = generate_ai_questions(seed=retry_seed)
+#             st.rerun()
+
+#         st.stop()
+
+#     # 🏁 QUIZ FINISHED
+#     if st.session_state.q_index >= len(questions):
+
+#         st.success(f"🎉 Score: {st.session_state.score}/{len(questions)}")
+#         st.balloons()
+
+#         st.markdown("## 📘 Explanations")
+
+#         for i, q in enumerate(questions):
+#             user_ans = st.session_state.user_answers[i]
+
+#             # 🔥 Fix for displaying full correct option
+#             correct_full = next(
+#                 (opt for opt in q["options"] if opt.lower().startswith(q["ans"].lower())),
+#                 q["ans"]
+#             )
+
+#             st.markdown(f"### Q{i+1}: {q['q']}")
+#             st.markdown(f"- Your Answer: {user_ans}")
+#             st.markdown(f"- Correct Answer: {correct_full}")
+#             st.markdown(f"- 💡 {q['exp']}")
+#             st.markdown("---")
+
+#         # 🔄 Restart
+#         if st.button("Restart Quiz 🔄"):
+#             st.cache_data.clear()  # 🔥 important
+#             st.session_state.pop("questions", None)
+#             st.session_state.q_index = 0
+#             st.session_state.score = 0
+#             st.session_state.user_answers = []
+#             st.rerun()
+
+#     else:
+#         # 📊 Progress
+#         st.progress(st.session_state.q_index / len(questions))
+
+#         q = questions[st.session_state.q_index]
+
+#         st.subheader(f"Question {st.session_state.q_index + 1} / {len(questions)}")
+
+#         selected = st.radio(
+#             q["q"],
+#             ["-- Select an option --"] + q["options"],
+#             key=f"q_{st.session_state.q_index}"
+#         )
+
+#         if st.button("Next ➡️"):
+#             if selected == "-- Select an option --":
+#                 st.warning("⚠️ Select an option")
+#             else:
+#                 st.session_state.user_answers.append(selected)
+
+#                 # 🔥 FINAL FIX (important)
+#                 selected_letter = selected.split(")")[0].strip().lower()
+#                 correct_letter = q["ans"].split(")")[0].strip().lower()
+
+#                 if selected_letter == correct_letter:
+#                     st.session_state.score += 1
+
+#                 st.session_state.q_index += 1
+#                 st.rerun()
+
 import streamlit as st
 import os
 import datetime
 from google import genai
-import json, re
-import streamlit.components.v1 as components
 from google.genai import types
+import json, re
 
+# --- INITIALIZATION ---
 if "page" not in st.session_state:
     st.session_state.page = "home"
 
+# Setup Client
 client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
-st.set_page_config("Chem-Ai",layout="wide")
-st.title("ChemAssist-Ai")
+st.set_page_config(page_title="ChemAssist-Ai", layout="wide")
 
-
-#---------for creating pallet or cards----------------
+# --- STYLING ---
 st.markdown("""
 <style>
 .card {
@@ -26,73 +336,6 @@ st.markdown("""
     backdrop-filter: blur(10px);
     margin-bottom: 20px;
 }
-</style>
-""", unsafe_allow_html=True)
-
-
-st.markdown(
-"""
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-""",
-unsafe_allow_html=True
-)
-
-
-st.sidebar.title("Navigation")
-
-if st.sidebar.button("Home"):
-    st.session_state.page = "home"
-
-if st.sidebar.button("Chem Assistant"):
-    st.session_state.page = "Chem Assistant"
-
-if st.sidebar.button("Quiz"):
-    st.session_state.page = "quiz"
-
-
-st.sidebar.markdown("---")
-
-st.sidebar.markdown(
- """
-<div style="display:flex; justify-content:center; gap:20px; margin-top:20px;">
-<a href="https://www.linkedin.com/in/parth-adsul-889106384/" target="_blank">
-<i class="fab fa-linkedin" style="font-size:34px; color:#0A66C2;"></i>
-</a>
-
-<a href="https://github.com/parth484" target="_blank">
-<i class="fab fa-github" style="font-size:34px; color:black;"></i>
-</a>
-</div>
-
-<p style="text-align:center; font-size:12px; margin-top:8px;">
-Made by Parth Adsul
-</p>
-""",
-unsafe_allow_html=True
-)    
-
-def get_response(user_input):
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",  # stable model
-        contents=f"""
-        You are a chemistry tutor. Only answer chemistry-related questions.
-        If the question is not related to chemistry, say:
-        'I only answer chemistry questions 😊'(but if (hi or bro or something other calling name(greeting)) is user input; then answer it as chem tutor)
-
-        Question: {user_input}
-        """
-    )
-    return response.text
-
-#⌬ ⚛︎⚕---------------------Assistant-----------------------------
-# 🎨 CSS for chat UI
-st.markdown("""
-<style>
-.chat-container {
-    display: flex;
-    flex-direction: column;
-}
-
 .user-bubble {
     align-self: flex-end;
     background: #00ffd5;
@@ -102,7 +345,6 @@ st.markdown("""
     margin: 5px;
     max-width: 70%;
 }
-
 .bot-bubble {
     align-self: flex-start;
     background: #2c2c2c;
@@ -115,196 +357,125 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# --- SIDEBAR ---
+st.sidebar.title("Navigation")
+if st.sidebar.button("Home"):
+    st.session_state.page = "home"
+if st.sidebar.button("Chem Assistant"):
+    st.session_state.page = "assistant"
+if st.sidebar.button("Quiz"):
+    st.session_state.page = "quiz"
 
-if st.session_state.page == "Chem Assistant":
+st.sidebar.markdown("---")
+st.sidebar.markdown("""
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<div style="display:flex; justify-content:center; gap:20px; margin-top:20px;">
+<a href="https://www.linkedin.com/in/parth-adsul-889106384/" target="_blank"><i class="fab fa-linkedin" style="font-size:34px; color:#0A66C2;"></i></a>
+<a href="https://github.com/parth484" target="_blank"><i class="fab fa-github" style="font-size:34px; color:white;"></i></a>
+</div>
+<p style="text-align:center; font-size:12px; margin-top:8px;">Made by Parth Adsul</p>
+""", unsafe_allow_html=True)
 
-    st.subheader("🤖 Chem Assistant")
+# --- AI FUNCTIONS ---
 
-    # Chat history
-    if "chat" not in st.session_state:
-        st.session_state.chat = []
+def get_response(user_input):
+    try:
+        response = client.models.generate_content(
+            model="gemini-1.5-flash",
+            contents=f"You are a chemistry tutor. Only answer chemistry-related questions. If user greets (hi, hello, bro), greet back as a tutor. Question: {user_input}"
+        )
+        return response.text
+    except Exception:
+        return "🤖: I'm temporarily over-saturated! Please try again in 10 seconds."
 
+@st.cache_data(ttl=3600)
+def generate_ai_questions(topic="Polymers in Engineering", num_q=5, seed=0):
+    prompt = f"Generate {num_q} multiple choice questions on {topic}. Return ONLY a JSON array of objects with keys 'q', 'options' (list), 'ans', and 'exp'."
+    
+    for _ in range(3): # Retry loop
+        try:
+            response = client.models.generate_content(
+                model="gemini-1.5-flash",
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                    temperature=0.3,
+                    safety_settings=[types.SafetySetting(category="HARM_CATEGORY_DANGEROUS_CONTENT", threshold="BLOCK_NONE")]
+                )
+            )
+            return json.loads(response.text)
+        except Exception:
+            continue
+    return []
 
-    # Input box
-    # 💬 FORM (this auto clears input)
-    with st.form(key="chat_form", clear_on_submit=True):
-        user_input = st.text_input("💬 Ask your chemistry doubt...")
-        submitted = st.form_submit_button("Send 🚀")
+# --- PAGES ---
 
-    if submitted and user_input:
-        reply = get_response(user_input)
-
-        st.session_state.chat.append(("user", user_input))
-        st.session_state.chat.append(("bot", reply))
-
-    # Chat container
-    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-    #displaying chats________
-    for role, msg in st.session_state.chat:
-        if role == "user":
-            st.markdown(f'<div class="user-bubble">👤 {msg}</div>', unsafe_allow_html=True)
-        else:
-            st.markdown(f'<div class="bot-bubble">🤖 {msg}</div>', unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # Clear chat button
-    if st.button("🗑 Clear Chat"):
-        st.session_state.chat = []
-        st.rerun()
-
-#-------------------------------Home------------------------------
 if st.session_state.page == "home":
     st.title("🧬 PolyLearn AI")
-    st.caption("🚀 Interactive Polymer Learning App with AI Chatbot")
-
-    st.markdown("""
-    ### 👨‍🎓 Developed by: Parth  
-    ### 📘 Subject: Chemistry (Polymers)  
-    ### 🏫 DYPCOE  
-    """)
-
+    st.markdown("### 🏫 DYPCOE | Subject: Chemistry (Polymers)")
     st.markdown("""
     <div class="card">
-        <h3>✨ Features of the App</h3>
+        <h3>✨ Features</h3>
         <ul>
-            <li>📚 Learn polymer concepts easily</li>
-            <li>🧪 Test knowledge with quizzes</li>
-            <li>🤖 Ask doubts using AI chatbot</li>
+            <li>📚 Learn polymer concepts</li>
+            <li>🧪 AI-generated dynamic quizzes</li>
+            <li>🤖 24/7 Chemistry Doubt Assistant</li>
         </ul>
     </div>
     """, unsafe_allow_html=True)
- 
-# ================== AI QUIZ FUNCTION ==================
 
-@st.cache_data(ttl=3600)
-def generate_ai_questions(topic="Polymers in Engineering", num_q=2,seed=0):
-    prompt = f"""
-    Generate {num_q} multiple choice questions on {topic}.
-    Return a JSON array of objects.
-    """
+elif st.session_state.page == "assistant":
+    st.subheader("🤖 Chem Assistant")
+    if "chat" not in st.session_state: st.session_state.chat = []
+    
+    with st.form(key="chat_form", clear_on_submit=True):
+        user_input = st.text_input("💬 Ask your chemistry doubt...")
+        if st.form_submit_button("Send 🚀") and user_input:
+            reply = get_response(user_input)
+            st.session_state.chat.append(("user", user_input))
+            st.session_state.chat.append(("bot", reply))
 
-    for _ in range(3):  # Retry loop
-        try:
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    # This forces the model to ONLY output JSON
-                    response_mime_type="application/json",
-                    temperature=0.3,
-                    safety_settings=[
-                        types.SafetySetting(
-                            category="HARM_CATEGORY_DANGEROUS_CONTENT",
-                            threshold="BLOCK_ONLY_HIGH",
-                        )
-                    ]
-                )
-            )
+    for role, msg in st.session_state.chat:
+        div_class = "user-bubble" if role == "user" else "bot-bubble"
+        st.markdown(f'<div class="{div_class}">{msg}</div>', unsafe_allow_html=True)
 
-            # Since we set response_mime_type, response.text is already clean JSON
-            data = json.loads(response.text)
-
-            if isinstance(data, list) and len(data) > 0:
-                return data
-
-        except Exception as e:
-            print("Retrying due to:", e)
-
-    return []
-# ================== QUIZ PAGE ==================
-
-if st.session_state.get("page") == "quiz":
-
+elif st.session_state.page == "quiz":
     st.title("🧪 AI Powered Quiz")
 
-    # 🎯 Generate button
-    # 🎯 Generate button
     if "questions" not in st.session_state:
         if st.button("🎯 Generate Quiz"):
-            with st.spinner("🧠 Generating Quiz..."):
-                # Pass the current timestamp as a seed to bypass the cache
-                current_seed = datetime.datetime.now().timestamp() 
-                st.session_state.questions = generate_ai_questions(seed=current_seed)
-
-            st.session_state.q_index = 0
-            st.session_state.score = 0
-            st.session_state.user_answers = []
-            st.rerun()
-
-    questions = st.session_state.questions
-
-    # ❌ If AI failed
-    if not questions:
-        st.error("⚠️ Failed to generate quiz.")
-
-        if st.button("Retry 🔄"):
-            with st.spinner("🔄 Retrying..."):
-                # 🔥 KEY UPDATE: Add a fresh seed here just like the Generate button
-                retry_seed = datetime.datetime.now().timestamp() 
-                st.session_state.questions = generate_ai_questions(seed=retry_seed)
-            st.rerun()
-
+            with st.spinner("🧠 Brainstorming questions..."):
+                seed = datetime.datetime.now().timestamp()
+                st.session_state.questions = generate_ai_questions(seed=seed)
+                st.session_state.q_index, st.session_state.score, st.session_state.user_answers = 0, 0, []
+                st.rerun()
         st.stop()
 
-    # 🏁 QUIZ FINISHED
-    if st.session_state.q_index >= len(questions):
+    questions = st.session_state.questions
+    if not questions:
+        st.error("⚠️ API limit hit or safety block. Try again in 1 minute.")
+        if st.button("Retry 🔄"):
+            st.session_state.pop("questions", None)
+            st.rerun()
+        st.stop()
 
+    if st.session_state.q_index >= len(questions):
         st.success(f"🎉 Score: {st.session_state.score}/{len(questions)}")
         st.balloons()
-
-        st.markdown("## 📘 Explanations")
-
-        for i, q in enumerate(questions):
-            user_ans = st.session_state.user_answers[i]
-
-            # 🔥 Fix for displaying full correct option
-            correct_full = next(
-                (opt for opt in q["options"] if opt.lower().startswith(q["ans"].lower())),
-                q["ans"]
-            )
-
-            st.markdown(f"### Q{i+1}: {q['q']}")
-            st.markdown(f"- Your Answer: {user_ans}")
-            st.markdown(f"- Correct Answer: {correct_full}")
-            st.markdown(f"- 💡 {q['exp']}")
-            st.markdown("---")
-
-        # 🔄 Restart
         if st.button("Restart Quiz 🔄"):
-            st.cache_data.clear()  # 🔥 important
             st.session_state.pop("questions", None)
-            st.session_state.q_index = 0
-            st.session_state.score = 0
-            st.session_state.user_answers = []
             st.rerun()
-
     else:
-        # 📊 Progress
-        st.progress(st.session_state.q_index / len(questions))
-
         q = questions[st.session_state.q_index]
-
-        st.subheader(f"Question {st.session_state.q_index + 1} / {len(questions)}")
-
-        selected = st.radio(
-            q["q"],
-            ["-- Select an option --"] + q["options"],
-            key=f"q_{st.session_state.q_index}"
-        )
-
+        st.subheader(f"Question {st.session_state.q_index + 1}")
+        sel = st.radio(q["q"], ["-- Select --"] + q["options"], key=f"q{st.session_state.q_index}")
+        
         if st.button("Next ➡️"):
-            if selected == "-- Select an option --":
-                st.warning("⚠️ Select an option")
-            else:
-                st.session_state.user_answers.append(selected)
-
-                # 🔥 FINAL FIX (important)
-                selected_letter = selected.split(")")[0].strip().lower()
-                correct_letter = q["ans"].split(")")[0].strip().lower()
-
-                if selected_letter == correct_letter:
+            if sel != "-- Select --":
+                st.session_state.user_answers.append(sel)
+                # Flexible checking logic
+                if sel.split(")")[0].strip().lower() == q["ans"].split(")")[0].strip().lower():
                     st.session_state.score += 1
-
                 st.session_state.q_index += 1
                 st.rerun()
+            else: st.warning("Please select an option")
