@@ -159,9 +159,15 @@ if st.session_state.page == "home":
     st.caption("🚀 Interactive Polymer Learning App with AI Chatbot")
 
     st.markdown("""
-    ### 👨‍🎓 Developed by: Parth  
+    ### 👨‍🎓 Developed by: Group 1  
     ### 📘 Subject: Chemistry (Polymers)  
     ### 🏫 DYPCOE  
+    ### Group members :
+    ###          1.Parth Adsul
+    ###          2.Agrima Girotra
+    ###          3.Aniket Bhandekar
+    ###          4.Nayan Bachuwar
+    ###          5.Arth Balgude      
     """)
 
     st.markdown("""
