@@ -155,7 +155,7 @@ if st.session_state.page == "Chem Assistant":
 
 #-------------------------------Home------------------------------
 if st.session_state.page == "home":
-    st.title("🧬 PolyLearn AI")
+    st.title("🧬 ChemTutor AI")
     st.caption("🚀 Interactive Polymer Learning App with AI Chatbot")
 
     st.markdown("""
