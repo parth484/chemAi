@@ -12,7 +12,7 @@ if "page" not in st.session_state:
 client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
 st.set_page_config("Chem-Ai",layout="wide")
-st.title("ChemAssist-Ai")
+st.title("ChemTutor Ai")
 
 
 #---------for creating pallet or cards----------------
@@ -65,7 +65,7 @@ st.sidebar.markdown(
 </div>
 
 <p style="text-align:center; font-size:12px; margin-top:8px;">
-Made by Parth Adsul
+Made by Group 1
 </p>
 """,
 unsafe_allow_html=True
